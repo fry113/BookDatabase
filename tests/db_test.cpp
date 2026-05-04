@@ -24,7 +24,7 @@ TEST(BookDatabase_Tests, EmptyDB) {
     EXPECT_EQ(db.size(), 0);
     EXPECT_EQ(db.GetAuthors().size(), 0);
     EXPECT_EQ(db.GetBooks().size(), 0);
-    EXPECT_EQ(calculateAverageRating(db), .0);
+    EXPECT_DOUBLE_EQ(calculateAverageRating(db), .0);
 }
 
 TEST(BookDatabase_Tests, EmplaceBack) {
@@ -82,7 +82,7 @@ TEST(BookDatabase_Tests, RatingCalculation) {
 
     auto avrRating = calculateAverageRating(db);
 
-    EXPECT_EQ(avrRating, 4.49);
+    EXPECT_DOUBLE_EQ(avrRating, 4.49);
 }
 
 TEST(Book_Tests, Constructors) {
@@ -92,7 +92,7 @@ TEST(Book_Tests, Constructors) {
     EXPECT_EQ(b1.genre, Genre::SciFi);
     EXPECT_EQ(b1.title, "1984");
     EXPECT_EQ(b1.year, 1949);
-    EXPECT_EQ(b1.rating, 4.0);
+    EXPECT_DOUBLE_EQ(b1.rating, 4.0);
     EXPECT_EQ(b1.read_count, 190);
 
     Book b2("1984", "George Orwell", 1949, "Fiction"sv, 4.0, 190);
@@ -100,7 +100,7 @@ TEST(Book_Tests, Constructors) {
     EXPECT_EQ(b2.genre, Genre::Fiction);
     EXPECT_EQ(b2.title, "1984");
     EXPECT_EQ(b2.year, 1949);
-    EXPECT_EQ(b2.rating, 4.0);
+    EXPECT_DOUBLE_EQ(b2.rating, 4.0);
     EXPECT_EQ(b2.read_count, 190);
 }
 

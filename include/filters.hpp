@@ -8,7 +8,7 @@
 
 namespace bookdb {
 
-// лямбда для фильтрации по выремени публикации книги
+// лямбда для фильтрации по времени публикации книги
 inline auto YearBetween(int begin, int end) {
     return [begin, end](const Book &b) { return b.year >= begin && b.year <= end; };
 }
@@ -26,13 +26,13 @@ inline auto GenreIs(Genre genre) {
 // fold-expression для объединения нескольких предикатов в один по И
 template <BookPredicate... Ps, typename T = Book>
 auto all_of(Ps... preds) {
-    return [preds...](const T &b) { return (preds(b) && ...); };
+    return [... preds = std::move(preds)](const T &b) { return (preds(b) && ...); };
 }
 
 // fold-expression для объединения нескольких предикатов в один по ИЛИ
 template <BookPredicate... Ps, typename T = Book>
 auto any_of(Ps... preds) {
-    return [preds...](const T &b) { return (preds(b) || ...); };
+    return [... preds = std::move(preds)](const T &b) { return (preds(b) || ...); };
 }
 
 // сама фильтрующая функция

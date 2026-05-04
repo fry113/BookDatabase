@@ -1,12 +1,12 @@
 #pragma once
 
-#include <set>
-#include <string_view>
+#include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "book.hpp"
 #include "concepts.hpp"
-#include "heterogeneous_lookup.hpp"
+// #include "heterogeneous_lookup.hpp"
 
 namespace bookdb {
 
@@ -22,7 +22,7 @@ public:
     using size_type = typename BookContainer::size_type;
     using difference_type = typename BookContainer::difference_type;
 
-    using AuthorContainer = std::set<std::string_view, TransparentStringLess>;
+    using AuthorContainer = std::unordered_set<std::string>;
 
 public:
     // Constructors and modifiers
@@ -53,19 +53,24 @@ public:
     template <typename... Args>
     reference EmplaceBack(Args &&...args) {
         books_.emplace_back(std::forward<Args>(args)...);
-        authors_.insert(books_.back().author);
+        // std::unordered_set сам следит за уникальностью, поэтому просто добавляем автора и используем ссылку на него
+        // да, будет вызван конструктор, даже если автор уже есть, но так код выглядит проще без if ( find == end() )..
+        auto [it, inserted] = authors_.emplace(books_.back().author);
+        books_.back().author = *it;
         return books_.back();
     }
 
     reference EmplaceBack(Book &&book) {
         books_.emplace_back(std::move(book));
-        authors_.insert(books_.back().author);
+        auto [it, inserted] = authors_.emplace(books_.back().author);
+        books_.back().author = *it;
         return books_.back();
     }
 
     void PushBack(const Book &book) {
         books_.push_back(book);
-        authors_.insert(books_.back().author);
+        auto [it, inserted] = authors_.emplace(books_.back().author);
+        books_.back().author = *it;
     }
 
     // только const методы для доступа к данным

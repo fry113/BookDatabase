@@ -18,18 +18,9 @@ namespace bookdb {
 // гистограмма количества книг по авторам, с использованием flat_map
 template <BookContainerLike T, typename Comparator = TransparentStringLess>
 auto buildAuthorHistogramFlat(const BookDatabase<T> &cont, Comparator comp = {}) {
-    /*
-    не придумал более эффективного способа заполнить flat_map, чем:
-    1. создать flat_map cont.GetAuthors()(O(n), где n - количество авторов, т.к. cont.authors_ уже отсортирован);
-    2. пройтись по всем книгам и увеличить счетчик (O(m log n), где m - количество книг, n - количество авторов).
-    в итоге получаем O(n + m log n).
-    */
-    // [1]
     std::flat_map<std::string_view, size_t, Comparator> ret(comp);
     std::transform(cont.GetAuthors().begin(), cont.GetAuthors().end(), std::inserter(ret, ret.end()),
                    [](std::string_view author) { return std::pair{author, size_t{0}}; });
-
-    // [2]
     for (const auto &book : cont) {
         ++ret.at(book.author);
     }
@@ -111,9 +102,9 @@ auto getTopNBy(const BookDatabase<T> &cont, size_t count, Comparator comp = {}) 
     // не с reverse_iterator. для упрощения чтения и улучшения производительности
     auto GreaterByRating = [&comp](const auto &lh, const auto &rh) { return comp(rh.get(), lh.get()); };
 
-    // nth_element отбирает top-N, sort упорядочивает только отобранную часть
-    std::nth_element(ret.begin(), ret.begin() + count, ret.end(), GreaterByRating);
-    std::sort(ret.begin(), ret.begin() + count, GreaterByRating);
+    // partial_sort отбирает и упорядочивает top-N за O(n log m),
+    // где n - количество книг в библиотеке, m - количество запрошенных книг
+    std::partial_sort(ret.begin(), ret.begin() + count, ret.end(), GreaterByRating);
 
     // удаляем все элементы после top-N
     ret.erase(ret.begin() + count, ret.end());

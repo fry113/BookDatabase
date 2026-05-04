@@ -27,12 +27,12 @@ template <typename S, typename I>
 concept BookSentinel = BookIterator<I> && std::sentinel_for<S, I>;
 
 template <typename P>
-concept BookPredicate = requires(P pred, Book &b) {
+concept BookPredicate = requires(P pred, const Book &b) {
     { pred(b) } -> std::same_as<bool>;
 };
 
 template <typename C>
-concept BookComparator = requires(C cmp, Book &lh, Book &rh) {
+concept BookComparator = requires(C cmp, const Book &lh, const Book &rh) {
     { cmp(lh, rh) } -> std::same_as<bool>;
 };
 
