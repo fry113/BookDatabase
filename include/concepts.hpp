@@ -6,20 +6,34 @@
 #include "book.hpp"
 
 namespace bookdb {
+template <typename T, typename... Args>
+concept BookContainerLike = requires(T cont, Args &&...args) {
+    typename T::iterator;
+    typename T::const_iterator;
+    requires std::same_as<typename T::value_type, Book>;
+    { cont.begin() } -> std::same_as<typename T::iterator>;
+    { cont.cbegin() } -> std::same_as<typename T::const_iterator>;
+    { cont.end() } -> std::same_as<typename T::iterator>;
+    { cont.cend() } -> std::same_as<typename T::const_iterator>;
+    { cont.size() } -> std::convertible_to<std::size_t>;
+    { cont.emplace_back(std::forward<Args>(args)...) } -> std::same_as<Book &>;
+};
 
 template <typename T>
-concept BookContainerLike = true;
-
-template <typename T>
-concept BookIterator = true;
+concept BookIterator = std::input_iterator<T> && std::same_as<std::iter_value_t<T>, Book> &&
+                       std::convertible_to<std::iter_reference_t<T>, const Book &>;
 
 template <typename S, typename I>
-concept BookSentinel = true;
+concept BookSentinel = BookIterator<I> && std::sentinel_for<S, I>;
 
 template <typename P>
-concept BookPredicate = true;
+concept BookPredicate = requires(P pred, const Book &b) {
+    { pred(b) } -> std::same_as<bool>;
+};
 
 template <typename C>
-concept BookComparator = true;
+concept BookComparator = requires(C cmp, const Book &lh, const Book &rh) {
+    { cmp(lh, rh) } -> std::same_as<bool>;
+};
 
 }  // namespace bookdb
