@@ -32,9 +32,6 @@ auto buildAuthorHistogramFlat(const BookDatabase<T> &cont, Comparator comp = {})
 template <BookContainerLike T>
 auto calculateGenreRatings(const BookDatabase<T> &cont) {
     std::flat_map<Genre, double> ret;
-
-    // array используется для накопления количества книг и суммы рейтингов по каждому жанру, п.что Genre - это enum,
-    // который можно не хэшировать, а использовать как индекс в векторе, что быстрее flat_map
     std::array<std::pair<size_t, double>, static_cast<size_t>(Genre::GenreQuan_)> acc{};
 
     // проходим по всем книгам и накапливаем количество книг и сумму рейтингов по каждому жанру
@@ -44,7 +41,7 @@ auto calculateGenreRatings(const BookDatabase<T> &cont) {
     });
 
     // вычисляем средний рейтинг для каждого жанра и заполняем flat_map
-    // если книг в жанре нет, то средний рейтинг будет .0
+    // если книг в жанре нет, то средний рейтинг будет = 0
     for (size_t g = 0; g < static_cast<size_t>(Genre::GenreQuan_); ++g) {
         auto val = (!acc[g].first) ? .0 : acc[g].second / acc[g].first;
         ret.emplace(static_cast<Genre>(g), val);
@@ -85,13 +82,13 @@ auto sampleRandomBooks(const BookDatabase<T> &cont, size_t count) {
     return ret;
 }
 
-// выборка из библиотеки указанного количества книг c наивысшим рейтингом
+// выборка из библиотеки указанного количества книг с наивысшим рейтингом
 template <BookContainerLike T, typename Comparator = bookdb::comp::LessByRating>
 auto getTopNBy(const BookDatabase<T> &cont, size_t count, Comparator comp = {}) {
     // если запрошено больше книг, чем есть в библиотеке, то возвращаем все книги
     count = std::min(count, cont.size());
 
-    // ret резервируется под все вниги, т.к. будем вызывать для него std::nth_element и std::sort
+    // ret резервируется под все книги, т.к. будем вызывать для него std::nth_element и std::sort
     std::vector<std::reference_wrapper<const Book>> ret;
     ret.reserve(cont.size());
 

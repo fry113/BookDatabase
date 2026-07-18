@@ -32,14 +32,14 @@ int main() {
     std::sort(db.begin(), db.end(), comp::LessByReadCount{});
     std::print("Books sorted by popularity: {}\n\n==================\n", db);
 
-    // Author histogram (изменил, чтобы использовать flat_map)
+    // Author histogram
     auto histogram = buildAuthorHistogramFlat(db);
     std::print("Author histogram:\n");
     for (const auto &[author, books_count] : histogram) {
         std::print("  {}: {}\n", author, books_count);
     }
 
-    // Ratings (изменил, чтобы использовать flat_map)
+    // Ratings
     auto genreRatings = calculateGenreRatings(db);
     std::print("\n\nAverage ratings by genres:\n");
     for (const auto &[genre, avg_rating] : genreRatings) {

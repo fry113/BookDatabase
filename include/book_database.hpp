@@ -6,7 +6,6 @@
 
 #include "book.hpp"
 #include "concepts.hpp"
-// #include "heterogeneous_lookup.hpp"
 
 namespace bookdb {
 

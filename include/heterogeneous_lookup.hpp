@@ -23,7 +23,6 @@ struct TransparentStringEqual {
 
 struct TransparentStringHash {
     using is_transparent = void;
-    // TODO: author + title?
     std::size_t operator()(const Book &b) const noexcept { return std::hash<std::string_view>{}(b.author); }
     std::size_t operator()(const std::string_view &sv) const noexcept { return std::hash<std::string_view>{}(sv); }
 };

@@ -42,8 +42,7 @@ auto filterBooks(It1 begin, It2 end, P pred)
 {
     std::vector<std::reference_wrapper<const Book>> ret;
 
-    // резервируем память под все книги через std::distance(),
-    // т.к. по условию задачи принимаем 2 итератора
+    // резервируем память под все книги через std::distance()
     ret.reserve(std::distance(begin, end));
 
     // std::copy_if() + back_inserter() обеспечивают фильтрацию книг по предикату за O(n),
